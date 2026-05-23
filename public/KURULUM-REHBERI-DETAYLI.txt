@@ -1,0 +1,609 @@
+# ═══════════════════════════════════════════════════════════════
+#  BAYIPORTAL — KURULUM REHBERİ
+#  WooCommerce Entegreli Bayi Subdomain Portalı
+#  Bash / SSH gerektirmez — tamamen tarayıcı üzerinden yapılır
+# ═══════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 1: GEREKSİNİMLER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bu kurulumu yapabilmek için şunlara ihtiyacın var:
+
+  ✅ WordPress kurulu bir site (ana siten)
+  ✅ WooCommerce eklentisi aktif
+  ✅ Hosting paneli erişimi (cPanel, Plesk, vb.)
+  ✅ Domain DNS yönetimi erişimi
+  ✅ Vercel hesabı (ücretsiz) — frontend yayınlamak için
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 2: ANA SİTE HAZIRLIĞI (WordPress)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── ADIM 2.1: WooCommerce'i Kur ──
+
+  1. WordPress Admin → Eklentiler → Yeni Ekle
+  2. Arama kutusuna "WooCommerce" yaz
+  3. "Şimdi Kur" → "Etkinleştir"
+  4. WooCommerce kurulum sihirbazını tamamla:
+     - Mağaza konumu: Türkiye
+     - Para birimi: Türk Lirası (₺)
+     - Ödeme yöntemleri: İstersen sonra ayarla
+     - Kargo: İstersen sonra ayarla
+
+── ADIM 2.2: Ürünlerini Ekle ──
+
+  WooCommerce kurulu olduktan sonra ürünlerini ekle:
+
+  1. WordPress Admin → Ürünler → Yeni Ekle
+  2. Her ürün için:
+     - Ürün adı
+     - Fiyat (Düzenli fiyat)
+     - İndirimli fiyat (varsa)
+     - Stok durumu ve miktarı
+     - Kategori (örn: Elektronik, Spor, Aksesuar)
+     - Ürün görseli
+  3. "Yayınla" ile kaydet
+
+  NOT: En az 5-10 ürün ekle ki bayiler görebilsin.
+
+── ADIM 2.3: WooCommerce REST API Anahtarı Oluştur ──
+
+  Bu, BayiPortal'ın ana sitenden ürün çekmesi için gerekli:
+
+  1. WordPress Admin → WooCommerce → Ayarlar → Gelişmiş → REST API
+  2. "Anahtar ekle / oluştur" butonuna tıkla
+  3. Formu doldur:
+     - Açıklama: BayiPortal API Anahtarı
+     - Kullanıcı: Kendi admin hesabını seç
+     - İzinler: "Oku/Yaz" seç ← ÖNEMLİ!
+  4. "API anahtarı oluştur" butonuna tıkla
+  5. Ekranda iki kod görünecek:
+     ┌──────────────────────────────────────┐
+     │  Consumer Key:    ck_xxxxxxxxxxxxxx  │
+     │  Consumer Secret: cs_xxxxxxxxxxxxxx  │
+     └──────────────────────────────────────┘
+  6. ⚠️ BU KODLARI KOPYALA VE GÜVENLİ YERDE SAKLA!
+     Sayfayı kapatınca bir daha göremezsin!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 3: BAYIPORTAL PLUGIN'İ KURMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── ADIM 3.1: Plugin Dosyasını İndir ──
+
+  1. BayiPortal proje dosyalarından şu klasöre git:
+     public/bayiportal-plugin/
+  2. bayiportal.php dosyasını bilgisayarına indir
+
+── ADIM 3.2: ZIP Oluştur ──
+
+  1. Bilgisayarında yeni bir klasör oluştur, adı: bayiportal-plugin
+  2. bayiportal.php dosyasını bu klasöre taşı
+  3. Klasörü ZIP olarak sıkıştır:
+     - Windows: Sağ tık → Sıkıştırılmış klasöre gönder
+     - Mac: Sağ tık → Sıkıştır
+  4. Sonuç: bayiportal-plugin.zip dosyan oldu
+
+── ADIM 3.3: WordPress'e Yükle ──
+
+  1. WordPress Admin → Eklentiler → Yeni Ekle → "Eklenti Yükle" butonu
+  2. "Dosya Seç" → bayiportal-plugin.zip dosyasını seç
+  3. "Şimdi Kur" → "Etkinleştir"
+  4. Sol menüde "Bayi Yönetimi" menüsü çıktı mı kontrol et
+
+── ADIM 3.4: Plugin'in Yaptığını Doğrula ──
+
+  Plugin aktif olduktan sonra şunlar olmuş olmalı:
+
+  □ WordPress Admin sol menüde "Bayi Yönetimi" menüsü görünüyor
+  □ Kullanıcılar → Yeni Ekle sayfasında rol seçiminde şunlar var:
+    - Standart Bayi
+    - Premium Bayi  
+    - VIP Bayi
+  □ WooCommerce → Ayarlar → Gelişmiş → REST API'de API anahtarın var
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 4: BAYİ KULLANICILARI OLUŞTURMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Her bayi için bir WordPress kullanıcı hesabı oluşturmalısın.
+
+── ADIM 4.1: Bayi Hesabı Oluştur ──
+
+  1. WordPress Admin → Kullanıcılar → Yeni Ekle
+  2. Formu doldur:
+     ┌─────────────────────────────────────────────┐
+     │  Kullanıcı adı:  ahmet-yilmaz              │
+     │  E-posta:        ahmet@teknoloji.com        │
+     │  Ad Soyad:       Ahmet Yılmaz               │
+     │  Şifre:          Güçlü bir şifre belirle    │
+     │  Rol:            Premium Bayi  ← SEÇ        │
+     └─────────────────────────────────────────────┘
+  3. "Yeni Kullanıcı Ekle" butonuna tıkla
+
+── ADIM 4.2: Bayi Bilgilerini Düzenle ──
+
+  1. Kullanıcılar listesinden oluşturduğun bayiye tıkla
+  2. Sayfayı aşağı kaydır → "Bayi Bilgileri" bölümünü bul
+  3. Şu alanları doldur:
+
+     ┌──────────────────────────────────────────────────────┐
+     │  🏪 Bayi Bilgileri                                   │
+     │                                                       │
+     │  Firma Adı:        Yılmaz Teknoloji                   │
+     │  İndirim Oranı:    25          (% olarak)             │
+     │  Kredi Limiti:     50000       (₺ olarak)             │
+     │  Kullanılan Kredi: 0           (₺ olarak)             │
+     │  Vergi No:         1234567890                         │
+     │  Telefon:          +90 532 123 4567                   │
+     │  Adres:            Atatürk Cad. No:45                 │
+     │  Şehir:            İstanbul                           │
+     └──────────────────────────────────────────────────────┘
+
+  4. "Kullanıcıyı Güncelle" butonuna tıkla
+
+── ADIM 4.3: İndirim Oranı Mantığı ──
+
+  Her rol için önerilen temel indirim oranları:
+
+     ┌──────────────┬─────────────┬──────────────────────────┐
+     │  Rol          │ Önerilen %  │ Açıklama                 │
+     ├──────────────┼─────────────┼──────────────────────────┤
+     │  Standart Bayi│ %10 - %20   │ Yeni bayiler, düşük hacim│
+     │  Premium Bayi │ %20 - %35   │ Orta hacimli bayiler     │
+     │  VIP Bayi     │ %35 - %50   │ Yüksek hacimli bayiler   │
+     └──────────────┴─────────────┴──────────────────────────┘
+
+  NOT: Bu TEMEL indirimdir. Daha sonra ürün bazlı özel
+  indirimler de ekleyebilirsin (Bölüm 7'ye bak).
+
+── ADIM 4.4: Tüm Bayileri Oluştur ──
+
+  Her bayi için ADIM 4.1 ve 4.2'yi tekrarla. Kaç bayin varsa
+  hepsi için ayrı kullanıcı hesabı oluştur.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 5: SUBDOMAIN OLUŞTURMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BayiPortal'ı bayi.siteniz.com adresinde yayınlayacaksın.
+
+── ADIM 5.1: cPanel'de Subdomain Oluştur ──
+
+  1. Hosting paneline (cPanel) giriş yap
+  2. "Subdomainler" (Subdomains) bölümüne git
+  3. Formu doldur:
+     ┌─────────────────────────────────────────────┐
+     │  Subdomain:    bayi                          │
+     │  Domain:       siteniz.com                   │
+     │  Belge Kökü:   public_html/bayi              │
+     └─────────────────────────────────────────────┘
+  4. "Oluştur" butonuna tıkla
+
+  Sonuç: bayi.siteniz.com adresi oluştu
+
+── ADIM 5.2: Plesk'te Subdomain Oluştur ──
+
+  Eğer Plesk kullanıyorsan:
+  1. Plesk panel → Web Siteleri ve Domainler
+  2. "Subdomain Ekle" butonuna tıkla
+  3. Subdomain adı: bayi
+  4. "Tamam" ile kaydet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 6: FRONTEND'İ YAYINLAMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+İki seçeneğin var. Seçenek A daha kolay ve ücretsiz.
+
+╔═══════════════════════════════════════════════════════════╗
+║  SEÇENEK A: VERCEL'E DEPLOY (ÖNERİLEN — Ücretsiz)       ║
+╚═══════════════════════════════════════════════════════════╝
+
+── ADIM 6A.1: Vercel Hesabı Oluştur ──
+
+  1. https://vercel.com adresine git
+  2. "Sign Up" → GitHub hesabınla kaydol
+  3. (Eğer GitHub hesabın yoksa önce onu oluştur)
+
+── ADIM 6A.2: Projeyi Vercel'e Bağla ──
+
+  BayiPortal frontend projesini GitHub'a push'la:
+  1. Bilgisayarında proje klasöründe:
+     - git init
+     - git add .
+     - git commit -m "BayiPortal"
+     - GitHub'da yeni repo oluştur
+     - git remote add origin https://github.com/KULLANICIADI/bayiportal.git
+     - git push -u origin main
+
+  2. Vercel Dashboard → "Add New" → "Project"
+  3. GitHub repo'nu seç → "Import"
+  4. Framework Preset: Vite
+  5. "Deploy" butonuna tıkla
+  6. 1-2 dakika bekle → Deploy tamamlandı!
+
+── ADIM 6A.3: Ortam Değişkenlerini Ayarla ──
+
+  1. Vercel Dashboard → Projen → Settings → Environment Variables
+  2. Şu değişkenleri ekle:
+
+     ┌──────────────────────────┬──────────────────────────────────┐
+     │  Anahtar (Key)           │  Değer (Value)                   │
+     ├──────────────────────────┼──────────────────────────────────┤
+     │  VITE_WC_SITE_URL        │  https://siteniz.com             │
+     │  VITE_WC_API_URL         │  https://siteniz.com/wp-json/    │
+     │                          │  bayiportal/v1                   │
+     │  VITE_WC_CONSUMER_KEY    │  ck_BÖLÜM2.3TE_ALDIĞIN_ANAHTAR  │
+     │  VITE_WC_CONSUMER_SECRET │  cs_BÖLÜM2.3TE_ALDIĞIN_ANAHTAR  │
+     └──────────────────────────┴──────────────────────────────────┘
+
+  3. Her değişkeni tek tek ekle → "Add"
+  4. Deployments → En son deploy → "Redeploy" butonuna tıkla
+     (Ortam değişkenlerinin etkili olması için yeniden deploy gerekli)
+
+── ADIM 6A.4: Custom Domain (bayi.siteniz.com) Ekle ──
+
+  1. Vercel Dashboard → Projen → Settings → Domains
+  2. "bayi.siteniz.com" yaz → "Add"
+  3. Vercel sana DNS kayıtları gösterecek:
+
+     ┌──────────────────────────────────────────────────────┐
+     │  DNS ayarlarında şu kayıtları ekle:                   │
+     │                                                       │
+     │  Tip: CNAME                                           │
+     │  Ad:  bayi                                            │
+     │  Değer: cname.vercel-dns.com                          │
+     └──────────────────────────────────────────────────────┘
+
+  4. Domain yöneticine (Cloudflare, Namecheap, vb.) git
+  5. DNS ayarlarına gir → Yeni kayıt ekle:
+     - Tip: CNAME
+     - Ad/Host: bayi
+     - Değer/Hedef: cname.vercel-dns.com
+     - TTL: Otomatik
+  6. Kaydet
+  7. DNS yayılmasını bekle (5-30 dk)
+  8. Vercel'de domain "Valid" durumuna gelecek
+  9. SSL otomatik kurulacak
+
+  SONUÇ: bayi.siteniz.com adresinde BayiPortal yayında!
+
+
+╔═══════════════════════════════════════════════════════════╗
+║  SEÇENEK B: KENDİ SUNUCUNA YÜKLEME (FTP ile)            ║
+╚═══════════════════════════════════════════════════════════╝
+
+── ADIM 6B.1: Build Dosyalarını İndir ──
+
+  1. Proje klasöründeki dist/ klasörünün tüm içeriğini
+     bilgisayarına indir
+
+── ADIM 6B.2: FTP ile Yükle ──
+
+  1. FTP istemcisini aç (FileZilla, Cyberduck, vb.)
+  2. Hosting FTP bilgilerinle bağlan
+  3. public_html/bayi/ klasörüne git
+  4. dist/ klasörünün içindeki TÜM dosyaları yükle:
+     - index.html
+     - assets/ klasörü (CSS ve JS dosyaları)
+     - favicon.svg
+
+── ADIM 6B.3: .htaccess Oluştur ──
+
+  SPA (Single Page Application) routing için .htaccess gerekli:
+
+  1. public_html/bayi/ klasöründe .htaccess dosyası oluştur
+  2. İçine şunu yapıştır:
+
+     <IfModule mod_rewrite.c>
+       RewriteEngine On
+       RewriteBase /
+       RewriteRule ^index\.html$ - [L]
+       RewriteCond %{REQUEST_FILENAME} !-f
+       RewriteCond %{REQUEST_FILENAME} !-d
+       RewriteRule . /index.html [L]
+     </IfModule>
+
+     # Güvenlik header'ları
+     <IfModule mod_headers.c>
+       Header set X-Content-Type-Options "nosniff"
+       Header set X-Frame-Options "SAMEORIGIN"
+       Header set X-XSS-Protection "1; mode=block"
+     </IfModule>
+
+     # Cache
+     <IfModule mod_expires.c>
+       ExpiresActive On
+       ExpiresByType text/css "access plus 1 year"
+       ExpiresByType application/javascript "access plus 1 year"
+       ExpiresByType image/png "access plus 1 year"
+       ExpiresByType image/jpeg "access plus 1 year"
+     </IfModule>
+
+  3. Kaydet
+
+── ADIM 6B.4: Ortam Değişkenleri ──
+
+  Kendi sunucunda ortam değişkenleri build sırasında gömülür.
+  Yani build ETMEDEN ÖNCE .env dosyası oluşturmalısın:
+
+  Proje kök dizininde .env dosyası oluştur:
+  
+     VITE_WC_SITE_URL=https://siteniz.com
+     VITE_WC_API_URL=https://siteniz.com/wp-json/bayiportal/v1
+     VITE_WC_CONSUMER_KEY=ck_BÖLÜM2.3TE_ALDIĞIN_ANAHTAR
+     VITE_WC_CONSUMER_SECRET=cs_BÖLÜM2.3TE_ALDIĞIN_ANAHTAR
+
+  Sonra npm run build yapıp dist/ klasörünü tekrar yükle.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 7: ÖZEL FİYATLANDIRMA AYARLAMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bu senin istediğin en önemli özellik: Her bayi × her ürün
+için BAĞIMSIZ indirim veya sabit fiyat belirleme.
+
+── ADIM 7.1: Yönetici Olarak Giriş Yap ──
+
+  1. bayi.siteniz.com adresine git
+  2. Giriş yap:
+     - Kullanıcı adı: admin
+     - Şifre: (WordPress admin şifren)
+
+  NOT: Demo modunda "admin / admin" ile giriş yapabilirsin.
+  Gerçek ortamda WordPress admin hesabınla giriş yaparsın.
+
+── ADIM 7.2: Fiyat Yönetimi Sayfası ──
+
+  Giriş yaptıktan sonra sol menüde "Fiyat Yönetimi" görünecek.
+  Bu sayfada:
+
+  ┌────────────────────────────────────────────────────────┐
+  │  1. Bayi Seç  → Hangi bayinin fiyatını düzenleyeceksen │
+  │  2. Ürün Listesi → Tüm ürünler tablo halinde           │
+  │  3. Her satırda:                                       │
+  │     - Liste Fiyatı (ana sitedeki fiyat)                │
+  │     - Temel İndirim (rol bazlı %)                      │
+  │     - Özel Fiyat (senin belirlediğin)                  │
+  │     - Bayi Fiyatı (bayinin ödeyeceği nihai fiyat)      │
+  │     - İşlem butonları                                  │
+  └────────────────────────────────────────────────────────┘
+
+── ADIM 7.3: Ürüne Özel İndirim Tanımla ──
+
+  1. Bayi seç (örn: Ahmet Yılmaz - Premium Bayi)
+  2. Ürün listesinde istediğin üründe "Özel Fiyat" butonuna tıkla
+  3. İki seçenek çıkar:
+
+     ┌─────────────────────────────────────────────────────┐
+     │  Seçenek 1: % İndirim                               │
+     │  ──────────────────────                              │
+     │  Liste fiyatı 2.499₺ olan ürüne %30 indirim ver     │
+     │  Sonuç: 2.499 × (1 - 0.30) = 1.749₺               │
+     │                                                      │
+     │  Seçenek 2: ₺ Sabit Fiyat                           │
+     │  ──────────────────────                              │
+     │  Ne olursa olsun bu ürüne 2.199₺ sabit fiyat ver    │
+     │  Sonuç: 2.199₺ (listeden bağımsız)                  │
+     └─────────────────────────────────────────────────────┘
+
+  4. Tip seç: "% İndirim" veya "₺ Sabit Fiyat"
+  5. Değer gir: (örn: 30 veya 2199)
+  6. "Kaydet" butonuna tıkla
+
+── ADIM 7.4: Fiyat Öncelik Sistemi ──
+
+  Bayi bir ürünü gördüğünde fiyat şu sırayla hesaplanır:
+
+     ┌───────────────────────────────────────────────────┐
+     │  1. ÖNCE: Ürün bazlı özel fiyat var mı?           │
+     │     ├─ EVET → Özel fiyatı uygula                  │
+     │     │  (en yüksek öncelik)                         │
+     │     └─ HAYIR → 2. adıma geç                       │
+     │                                                    │
+     │  2. SONRA: Rol bazlı indirim var mı?               │
+     │     ├─ EVET → Liste fiyatından %X düş             │
+     │     └─ HAYIR → Liste fiyatını göster              │
+     └───────────────────────────────────────────────────┘
+
+  ÖRNEK:
+
+  Ahmet Yılmaz (Premium Bayi - %25 temel indirim):
+
+  Ürün              Liste    Özel Fiyat    Bayi Fiyatı
+  ────────────────  ──────   ──────────    ───────────
+  Kulaklık Pro      2.499₺   %30 indirim   1.749₺     ← Özel
+  Air Max Pro       3.299₺   2.199₺ sabit  2.199₺     ← Özel
+  Gaming Klavye     1.899₺   %40 indirim   1.139₺     ← Özel
+  Bakım Seti        899₺     —             674₺       ← %25 temel
+  Güneş Gözlüğü    1.599₺   —             1.199₺     ← %25 temel
+
+  Mor etiketli ürünler = Özel fiyatlı
+  Altın etiketli ürünler = Temel indirimli
+
+── ADIM 7.5: Özel Fiyatı Kaldır ──
+
+  Bir üründeki özel fiyatı kaldırmak istersen:
+  1. Üründe "Özel Fiyat" butonuna tıkla (zaten özel fiyat var)
+  2. "Sil" butonuna tıkla
+  3. Fiyat otomatik olarak rol bazlı indirime döner
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 8: CORS AYARLARI (KRİTİK!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Subdomain'den ana siteye API isteği atıldığında tarayıcı
+CORS hatası verebilir. BayiPortal plugin bunu otomatik
+yapıyor AMA kontrol et:
+
+── ADIM 8.1: WordPress Admin'den Kontrol ──
+
+  1. WordPress Admin → Bayi Yönetimi → Ayarlar
+  2. "İzin Verilen Originler" alanını kontrol et:
+     - bayi.siteniz.com URL'si listede olmalı
+  3. Eğer yoksa ekle ve kaydet
+
+── ADIM 8.2: Manuel CORS Ayarı ──
+
+  Eğer plugin CORS ayarlarını yapmıyorsa, hosting panelinden:
+
+  1. public_html/ (ana site kök dizini) nde .htaccess dosyasını aç
+  2. En üste şunu ekle:
+
+     <IfModule mod_headers.c>
+       SetEnvIf Origin "https://bayi\.siteniz\.com" AccessControlAllowOrigin=$0
+       Header add Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
+       Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+       Header always set Access-Control-Allow-Headers "Authorization, Content-Type"
+       Header always set Access-Control-Allow-Credentials "true"
+     </IfModule>
+
+  3. Kaydet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 9: TEST ETME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── ADIM 9.1: Bayi Girişi Test ──
+
+  1. bayi.siteniz.com adresine git
+  2. Giriş sayfası göründü mü? ✅
+  3. Bayi kullanıcı adı ve şifresini gir
+  4. "Giriş Yap" butonuna tıkla
+  5. Dashboard'a yönlendirildin mi? ✅
+  6. "Beni Hatırla" seçiliyse tarayıcıyı kapat aç
+     Otomatik giriş yapıyor mu? ✅
+
+── ADIM 9.2: Ürün Listesi Test ──
+
+  1. Sol menüden "Ürünler" e tıkla
+  2. Ana sitedeki ürünler listeleniyor mu? ✅
+  3. Bayi fiyatları görünüyor mu? ✅
+  4. Özel fiyatlı ürünler mor etiketli mi? ✅
+  5. İndirim tutarı doğru mu? ✅
+
+── ADIM 9.3: Sepet Test ──
+
+  1. Bir ürüne miktar seç → "Sepete Ekle"
+  2. Sepetim sayfasına git
+  3. Ürün sepette mi? ✅
+  4. Fiyat doğru mu? ✅
+  5. Miktar değiştir → Fiyat güncelleniyor mu? ✅
+  6. "Siparişi Onayla" → Onay mesajı göründü mü? ✅
+
+── ADIM 9.4: Admin Fiyat Yönetimi Test ──
+
+  1. admin hesabıyla giriş yap
+  2. "Fiyat Yönetimi" sayfası göründü mü? ✅
+  3. Bayi seç → Ürün listesi geliyor mu? ✅
+  4. Bir ürüne "Özel Fiyat" tıkla
+  5. % indirim gir → Kaydet
+  6. Bayi hesabına geç → O ürünün fiyatı değişti mi? ✅
+  7. Sabit fiyat gir → Kaydet
+  8. Bayi hesabına geç → Sabit fiyat görünüyor mu? ✅
+
+── ADIM 9.5: WooCommerce Senkron Test ──
+
+  1. WordPress Admin → Ürünler → Yeni ürün ekle
+  2. BayiPortal'da sayfayı yenile
+  3. Yeni ürün listede göründü mü? ✅
+  4. Stok değişikliği yap → BayiPortal'da güncellendi mi? ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 10: SORUN GİDERME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── SORUN: Giriş yapamıyorum ──
+
+  Çözüm:
+  □ Kullanıcı adı ve şifre doğru mu kontrol et
+  □ Kullanıcının rolü "Bayi" rollerinden biri mi?
+    (dealer, premium_dealer, vip_dealer)
+  □ BayiPortal plugin aktif mi?
+  □ REST API endpoint'leri çalışıyor mu?
+    Tarayıcıda aç: siteniz.com/wp-json/bayiportal/v1/login
+    JSON dönüyor mu?
+
+── SORUN: Ürünler listelenmiyor ──
+
+  Çözüm:
+  □ WooCommerce aktif mi?
+  □ Ürünler "Yayınlandı" durumunda mı?
+  □ API anahtarları doğru mu?
+    siteniz.com/wp-json/wc/v3/products?consumer_key=CK&consumer_secret=CS
+    adresini tarayıcıda aç → JSON dönüyor mu?
+  □ VITE_WC_CONSUMER_KEY ve VITE_WC_CONSUMER_SECRET
+    ortam değişkenleri doğru girilmiş mi?
+
+── SORUN: CORS hatası alıyorum ──
+
+  Çözüm:
+  □ Bölüm 8'deki CORS ayarlarını kontrol et
+  □ BayiPortal plugin ayarlarında subdomain URL'si eklendi mi?
+  □ .htaccess dosyasında CORS header'ları var mı?
+  □ Cloudflare kullanıyorsan:
+    - Rules → Transform Rules → Modify Response Header
+    - Access-Control-Allow-Origin ekle
+
+── SORUN: Bayi fiyatları görünmüyor ──
+
+  Çözüm:
+  □ Bayi kullanıcı meta verilerinde dealer_discount_rate var mı?
+  □ WordPress Admin → Kullanıcılar → Bayi → Düzenle
+    "Bayi Bilgileri" bölümünde indirim oranı dolu mu?
+  □ Admin girişiyle fiyat yönetimi sayfasında
+    özel fiyat tanımladın mı?
+
+── SORUN: Subdomain açılmıyor ──
+
+  Çözüm:
+  □ DNS kayıtları doğru mu?
+    - CNAME: bayi → cname.vercel-dns.com (Vercel)
+    - VEYA A kaydı: bayi → sunucu IP'si (kendi sunucu)
+  □ DNS yayılması 5-30 dk sürebilir
+  □ SSL sertifikası aktif mi?
+  □ .htaccess dosyası doğru mu? (Seçenek B)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 11: GÜNLÜK KULLANIM AKIŞI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── Sen (Yönetici) Ne Yaparsın? ──
+
+  1. WordPress Admin'den yeni ürün ekle → Otomatik BayiPortal'a düşer
+  2. Bayi Yönetimi'nden yeni bayi oluştur → İndirim oranı belirle
+  3. Fiyat Yönetimi'nden özel fiyat ata → Bayi özel fiyatla görür
+  4. Stok güncelle → BayiPortal anında yansır
+  5. Siparişleri WooCommerce'den takip et
+
+── Bayi Ne Yapar? ──
+
+  1. bayi.siteniz.com'a gir → Kullanıcı adı/şifre ile giriş yap
+  2. Ürün kataloğuna bak → Kendi özel fiyatını gör
+  3. Sepete ekle → Miktar seç
+  4. Sipariş onayla → WooCommerce'de sipariş oluşur
+  5. Sipariş geçmişini kontrol et
+  6. Profil bilgilerini güncelle
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BÖLÜM 12: ÖNEMLİ NOTLAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠️  API anahtarlarını ASLA frontend kodunda görünür şekilde bırakma
+  ⚠️  .env dosyasını ASLA GitHub'a push'lama (.gitignore'a ekle)
+  ⚠️  WordPress admin şifreni güçlü tut
+  ⚠️  Bayi şifrelerini güçlü tut
+  ⚠️  SSL sertifikası zorunlu (https://)
+  ⚠️  WooCommerce güncellemelerini düzenli yap
+  ⚠️  BayiPortal plugin'ini güncellerken önce yedek al
+
+  📌  Demo modunda veriler tarayıcıda saklanır
+  📌  Gerçek ortamda tüm veriler WordPress veritabanında
+  📌  Özel fiyatlar bayi bazında saklanır, bir bayinin fiyatı
+      diğer bayiyi etkilemez
+  📌  Sabit fiyat (% değil ₺) verirsen, ana sitedeki fiyat
+      değişse bile bayi fiyatı sabit kalır
+  📌  Yüzde indirim verirsen, ana sitedeki fiyat değişirse
+      bayi fiyatı da otomatik güncellenir

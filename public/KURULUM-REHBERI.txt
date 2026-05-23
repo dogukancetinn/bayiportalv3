@@ -1,0 +1,99 @@
+# ═══════════════════════════════════════════════════
+# BayiPortal - WooCommerce Entegrasyon Kurulum Rehberi
+# Bash erişimi OLMADAN kurulum adımları
+# ═══════════════════════════════════════════════════
+
+📌 ADIM 1: WORDPRESS'E PLUGIN YÜKLEME
+─────────────────────────────────────
+1. WordPress Admin → Eklentiler → Yeni Ekle → "Eklenti Yükle" butonu
+2. public/bayiportal-plugin/ klasörünü ZIP olarak sıkıştır
+3. "Eklenti Yükle" den ZIP dosyasını seç ve yükle
+4. Eklentiler sayfasından "BayiPortal" ı aktifleştir
+
+📌 ADIM 2: WOOCOMMERCE API ANAHTARLARI
+───────────────────────────────────────
+1. WordPress Admin → WooCommerce → Ayarlar → Gelişmiş → REST API
+2. "Anahtar ekle" butonuna tıkla
+3. Açıklama: BayiPortal
+4. Kullanıcı: Admin hesabın
+5. İzinler: Oku/Yaz
+6. "Anahtar oluştur" → ck_... ve cs_... kodlarını kopyala
+
+📌 ADIM 3: BAYİ KULLANICILARI OLUŞTURMA
+──────────────────────────────────────
+1. WordPress Admin → Kullanıcılar → Yeni Ekle
+2. Kullanıcı adı, e-posta, şifre gir
+3. Rol: "Standart Bayi" / "Premium Bayi" / "VIP Bayi" seç
+4. Kaydet
+5. Kullanıcı listesinde kullanıcıyı düzenle → "Bayi Bilgileri" bölümünden:
+   - Firma adı
+   - İndirim oranı (%)
+   - Kredi limiti (₺)
+   - Vergi no, telefon, adres, şehir
+
+📌 ADIM 4: SUBDOMAIN OLUŞTURMA
+──────────────────────────────
+cPanel/Plesk üzerinden:
+1. Subdomainler → Yeni Subdomain Oluştur
+2. Subdomain: bayi (→ bayi.siteniz.com)
+3. Belge kökü: public_html/bayi
+
+📌 ADIM 5: FRONTEND'İ SUBDOMAINE YÜKLEME
+───────────────────────────────────────
+Seçenek A - Vercel (Önerilen, ücretsiz):
+1. Vercel dashboard → Proje ayarları → Domains
+2. "bayi.siteniz.com" ekle
+3. DNS ayarlarında CNAME kaydı ekle:
+   bayi.siteniz.com → cname.vercel-dns.com
+
+Seçenek B - FTP ile kendi sunucuna:
+1. dist/ klasörünün içindeki dosyaları FTP ile public_html/bayi/ klasörüne yükle
+2. .htaccess dosyası oluştur (SPA routing için):
+
+   <IfModule mod_rewrite.c>
+     RewriteEngine On
+     RewriteBase /
+     RewriteRule ^index\.html$ - [L]
+     RewriteCond %{REQUEST_FILENAME} !-f
+     RewriteCond %{REQUEST_FILENAME} !-d
+     RewriteRule . /index.html [L]
+   </IfModule>
+
+📌 ADIM 6: FRONTEND ENV AYARLARI
+───────────────────────────────
+Vercel kullanıyorsan:
+1. Vercel Dashboard → Proje → Settings → Environment Variables
+2. Şu değişkenleri ekle:
+   VITE_WC_SITE_URL = https://siteniz.com
+   VITE_WC_API_URL = https://siteniz.com/wp-json/bayiportal/v1
+   VITE_WC_CONSUMER_KEY = ck_sizin_anahtariniz
+   VITE_WC_CONSUMER_SECRET = cs_sizin_anahtariniz
+
+Kendi sunucunda ise:
+1. .env dosyası oluştur (dist/ ile aynı dizinde):
+   VITE_WC_SITE_URL=https://siteniz.com
+   VITE_WC_API_URL=https://siteniz.com/wp-json/bayiportal/v1
+
+📌 ADIM 7: CORS AYARLARI
+─────────────────────────
+Plugin zaten CORS ayarlarını yapıyor. Ama gerekirse:
+1. WordPress Admin → Bayi Yönetimi → Ayarlar
+2. "İzin Verilen Originler" alanına bayi subdomain URL'sini ekle
+
+📌 ADIM 8: TEST
+───────────────
+1. bayi.siteniz.com adresine git
+2. Oluşturduğun bayi kullanıcısı ile giriş yap
+3. Ürünlerin listelendiğini, bayi fiyatlarının uygulandığını kontrol et
+4. Sepete ürün ekle, sipariş oluştur
+5. WordPress Admin → WooCommerce → Siparişler'den siparişi doğrula
+
+═══════════════════════════════════════════════════
+🔧 DEMO GİRİŞ BİLGİLERİ (Frontend test için)
+═══════════════════════════════════════════════════
+Premium Bayi:  bayi1 / 123456  (%25 indirim)
+VIP Bayi:      bayi2 / 123456  (%35 indirim)
+Standart Bayi: demo / demo      (%15 indirim)
+
+NOT: Bu demo hesaplar sadece frontend demo modunda çalışır.
+Gerçek ortamda WordPress'te oluşturduğunuz bayi kullanıcılarını kullanın.
