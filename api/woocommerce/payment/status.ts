@@ -10,26 +10,47 @@ export const config = {
 };
 
 export default async function handler(request: Request) {
+  // CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+  }
+
   const url = new URL(request.url);
   const sessionId = url.searchParams.get('session_id');
 
   if (!sessionId) {
     return new Response(JSON.stringify({ error: 'Session ID gerekli' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     });
   }
 
+  // Bayi token'i al
+  const authHeader = request.headers.get('Authorization');
+  const bayiToken = authHeader?.replace('Bearer ', '');
+
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (bayiToken) {
+      headers['Authorization'] = `Bearer ${bayiToken}`;
+    } else if (WC_KEY && WC_SECRET) {
+      headers['Authorization'] = 'Basic ' + btoa(`${WC_KEY}:${WC_SECRET}`);
+    }
+
     // BayiPortal plugin'inden odeme durumunu sorgula
     const statusResponse = await fetch(
       `${WC_URL}/wp-json/bayiportal/v1/payment/status?session_id=${sessionId}`,
-      {
-        headers: {
-          'Authorization': 'Basic ' + btoa(`${WC_KEY}:${WC_SECRET}`),
-          'Content-Type': 'application/json',
-        },
-      }
+      { headers }
     );
 
     if (!statusResponse.ok) {
@@ -39,7 +60,7 @@ export default async function handler(request: Request) {
         message: error.message || 'Odeme durumu alinamadi' 
       }), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       });
     }
 
@@ -51,17 +72,17 @@ export default async function handler(request: Request) {
       message: statusData.message,
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     });
 
   } catch (error) {
-    console.error('Payment status error:', error);
+    console.error('[Payment] Status error:', error);
     return new Response(JSON.stringify({ 
       status: 'failed',
       message: 'Odeme durumu kontrol edilirken hata olustu' 
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     });
   }
 }

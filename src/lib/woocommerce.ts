@@ -160,14 +160,31 @@ export async function fetchCustomer(customerId: number): Promise<WCCustomer> {
 }
 
 // Odeme URL olustur (VakifBank sanal POS icin)
-export async function createPaymentSession(orderId: number, returnUrl: string): Promise<{
+export async function createPaymentSession(orderId: number, returnUrl: string, token?: string): Promise<{
   payment_url: string;
   session_id: string;
 }> {
-  return wcFetch('/payment/create-session', {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  // Bayi token'i varsa ekle (BayiPortal authentication)
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  const response = await fetch(`${API_BASE}/payment/create-session`, {
     method: 'POST',
+    headers,
     body: JSON.stringify({ order_id: orderId, return_url: returnUrl }),
   });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'Payment API error' }));
+    throw new Error(error.message || error.error || 'Odeme oturumu olusturulamadi');
+  }
+  
+  return response.json();
 }
 
 // Odeme durumunu kontrol et
