@@ -25,16 +25,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-navy-950 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 opacity-30">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: 'var(--color-bg)' }}>
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-40">
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 30% 20%, rgba(212,168,83,0.15) 0%, transparent 50%),
-                           radial-gradient(circle at 70% 80%, rgba(212,168,83,0.1) 0%, transparent 50%)`,
+          backgroundImage: `radial-gradient(circle at 30% 20%, rgba(255, 69, 0, 0.08) 0%, transparent 50%),
+                           radial-gradient(circle at 70% 80%, rgba(255, 69, 0, 0.05) 0%, transparent 50%)`,
         }} />
         <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+                           linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
         }} />
       </div>
@@ -47,17 +47,18 @@ export default function LoginPage() {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-16 h-16 gold-gradient rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-gold-500/20">
-            <Shield className="w-8 h-8 text-navy-950" />
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-md" style={{ 
+            background: 'var(--color-bg-white)', 
+            border: '1px solid var(--color-border)' 
+          }}>
+            <Shield className="w-8 h-8" style={{ color: 'var(--color-accent)' }} />
           </div>
-          <h1 className="text-3xl font-bold font-[var(--font-display)] text-white">BayiPortal</h1>
-          <p className="text-sm text-gold-400 tracking-widest uppercase mt-1">Provanya Bayi Sistemi</p>
+          <h1 className="text-3xl font-bold f-display" style={{ color: 'var(--color-accent)' }}>BayiPortal</h1>
+          <p className="text-sm tracking-widest uppercase mt-1 f-strong" style={{ color: 'var(--color-text-2)' }}>PROVANYA BAYI SISTEMI</p>
         </div>
 
         {/* Login Card */}
-        <div className="glass-card rounded-2xl p-8 border border-navy-700">
-          <h2 className="text-xl font-semibold text-white text-center mb-6">Bayi Girisi</h2>
-
+        <div className="glass-card rounded-2xl p-8">
           {/* Error Message */}
           <AnimatePresence>
             {error && (
@@ -65,7 +66,12 @@ export default function LoginPage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm"
+                className="mb-6 p-4 rounded-xl text-sm"
+                style={{ 
+                  background: 'rgba(220, 38, 38, 0.08)', 
+                  border: '1px solid rgba(220, 38, 38, 0.2)',
+                  color: '#dc2626'
+                }}
               >
                 {error}
               </motion.div>
@@ -75,12 +81,12 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Username */}
             <div>
-              <label className="block text-sm text-slate-400 mb-2 font-medium">Kullanici Adi</label>
+              <label className="block text-sm mb-2 f-strong" style={{ color: 'var(--color-accent)' }}>Kullanici Adi</label>
               <input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full bg-navy-800 border border-navy-600 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/50 transition-all"
+                className="form-input"
                 placeholder="Kullanici adinizi girin"
                 required
                 autoComplete="username"
@@ -89,13 +95,13 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm text-slate-400 mb-2 font-medium">Sifre</label>
+              <label className="block text-sm mb-2 f-strong" style={{ color: 'var(--color-accent)' }}>Sifre</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-600 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/50 transition-all pr-12"
+                  className="form-input pr-12"
                   placeholder="Sifrenizi girin"
                   required
                   autoComplete="current-password"
@@ -103,7 +109,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-gold-400 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: 'var(--color-text-4)' }}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -120,17 +127,21 @@ export default function LoginPage() {
                     onChange={e => setRememberMe(e.target.checked)}
                     className="sr-only"
                   />
-                  <div className={`w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
-                    rememberMe ? 'bg-gold-500 border-gold-500' : 'border-navy-600 bg-navy-800'
-                  }`}>
+                  <div 
+                    className="w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center"
+                    style={{ 
+                      background: rememberMe ? 'var(--color-accent)' : 'var(--color-bg-gray)',
+                      borderColor: rememberMe ? 'var(--color-accent)' : 'var(--color-border-dark)'
+                    }}
+                  >
                     {rememberMe && (
-                      <svg className="w-3 h-3 text-navy-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
                 </div>
-                <span className="text-sm text-slate-400 group-hover:text-white transition-colors">Beni hatirla</span>
+                <span className="text-sm transition-colors" style={{ color: 'var(--color-accent)' }}>Beni hatirla</span>
               </label>
             </div>
 
@@ -138,10 +149,10 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full gold-gradient text-navy-950 font-bold py-4 rounded-xl hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30"
+              className="btn btn-primary w-full py-4 text-base"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-navy-950 border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <LogIn className="w-5 h-5" />
@@ -154,12 +165,18 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs" style={{ color: 'var(--color-text-3)' }}>
             Provanya Bayi Portali
           </p>
-          <p className="text-xs text-slate-600 mt-2">
+          <p className="text-xs mt-2" style={{ color: 'var(--color-text-4)' }}>
             Bayi basvurusu icin{' '}
-            <a href="https://provanya.com/bayi-basvurusu" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:text-gold-300 transition-colors">
+            <a 
+              href="https://provanya.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="transition-colors hover:underline"
+              style={{ color: 'var(--color-accent)' }}
+            >
               provanya.com
             </a>
             {' '}adresini ziyaret edin
